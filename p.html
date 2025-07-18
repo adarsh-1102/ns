@@ -3,35 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Camera Color Picker</title>
+  <title>ARX Tools – Live Color Picker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
   <style>
-    html, body {
+    :root {
+      --bg: #111;
+      --text: #f0f0f0;
+      --accent: #00ffc8;
+    }
+
+    * {
       margin: 0;
       padding: 0;
-      background: #111;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .logo {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .logo .brand {
+      color: var(--accent);
+    }
+
+    .logo .sub {
       color: white;
-      font-family: 'Poppins', sans-serif;
     }
 
     h1 {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      font-weight: 500;
+      color: var(--text);
       text-align: center;
-      margin: 20px 10px 10px;
-      font-size: 1.5rem;
     }
 
     #camera-wrapper {
       position: relative;
       width: 100%;
-      max-width: 600px;
-      height: 480px; /* default height for desktop */
-      margin: auto;
+      max-width: 500px;
+      height: 480px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(0, 255, 200, 0.3);
     }
 
     video {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 10px;
     }
 
     .grid-overlay {
@@ -47,42 +81,59 @@
     }
 
     .grid-cell {
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .grid-cell:active {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(255, 255, 255, 0.08);
     }
 
     .color-info {
+      margin-top: 25px;
       text-align: center;
-      margin-top: 20px;
     }
 
     .color-box {
-      width: 80px;
-      height: 80px;
+      width: 90px;
+      height: 90px;
       margin: 0 auto 10px;
       border: 2px solid white;
-      border-radius: 10px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+
+    .values {
+      font-size: 1.1rem;
+      margin: 8px 0;
+    }
+
+    button.copy-btn {
+      padding: 8px 20px;
+      margin-top: 10px;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #000;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button.copy-btn:hover {
+      background: #00ddb3;
     }
 
     canvas {
       display: none;
     }
 
-    p {
-      margin: 4px 0;
-    }
-
-    /* ✅ Mobile-specific styles */
     @media (max-width: 768px) {
       #camera-wrapper {
-        height: 75vh; /* taller on mobile */
+        height: 75vh;
       }
 
-      h1 {
-        font-size: 1.3rem;
+      .logo {
+        font-size: 1.8rem;
       }
 
       .color-box {
@@ -90,14 +141,17 @@
         height: 70px;
       }
 
-      .color-info {
-        font-size: 0.95rem;
+      .values {
+        font-size: 1rem;
       }
     }
   </style>
 </head>
 <body>
-  <h1>🎨 Live Camera Color Picker</h1>
+  <!-- ARX Tools Logo -->
+  <div class="logo"><span class="brand">ARX</span><span class="sub"> Tools</span></div>
+
+  <h1>Live Color Picker from Camera</h1>
 
   <div id="camera-wrapper">
     <video id="video" autoplay playsinline></video>
@@ -108,9 +162,9 @@
 
   <div class="color-info">
     <div class="color-box" id="colorBox"></div>
-    <p id="rgbValue">RGB: </p>
-    <p id="hexValue">HEX: </p>
-    <p style="font-size: 0.9rem;">📸 Tap a square to pick color</p>
+    <p class="values" id="rgbValue">RGB: —</p>
+    <p class="values" id="hexValue">HEX: —</p>
+    <button class="copy-btn" onclick="copyHex()">Copy HEX</button>
   </div>
 
   <script>
@@ -122,7 +176,8 @@
     const rgbValue = document.getElementById('rgbValue');
     const hexValue = document.getElementById('hexValue');
 
-    // Start camera
+    let lastHex = '';
+
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
       .then(stream => {
         video.srcObject = stream;
@@ -131,7 +186,6 @@
         alert("Camera access denied or unavailable.");
       });
 
-    // Create tappable grid
     for (let i = 0; i < 24; i++) {
       const cell = document.createElement('div');
       cell.classList.add('grid-cell');
@@ -144,7 +198,6 @@
 
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const scaleX = canvas.width / rect.width;
@@ -157,7 +210,14 @@
         colorBox.style.backgroundColor = hex;
         rgbValue.textContent = `RGB: (${r}, ${g}, ${b})`;
         hexValue.textContent = `HEX: ${hex}`;
+        lastHex = hex;
       });
+    }
+
+    function copyHex() {
+      if (!lastHex) return;
+      navigator.clipboard.writeText(lastHex);
+      alert("HEX code copied: " + lastHex);
     }
   </script>
 </body>
