@@ -85,35 +85,32 @@
     <div class="result" id="result">Waiting to test...</div>
   </div>
 
-  <!-- Load LibreSpeed script -->
-  <script src="https://cdn.jsdelivr.net/npm/librespeed/speedtest.min.js"></script>
-
+  <!-- Use official script from LibreSpeed -->
+  <script src="https://librespeed.org/speedtest.js"></script>
   <script>
-    let test;
+    const resultEl = document.getElementById("result");
+
+    let s = new Speedtest();
+    s.setParameter("xhr_dlMultistream", 3);
+    s.setParameter("time_dl", 5);
+    s.setParameter("time_ul", 5);
+
+    s.onupdate = function(data) {
+      resultEl.innerHTML = `
+        ⬇️ Download: ${data.dlStatus} Mbps<br>
+        ⬆️ Upload: ${data.ulStatus} Mbps<br>
+        📶 Ping: ${data.pingStatus} ms
+      `;
+    };
+
+    s.onend = function() {
+      resultEl.innerHTML += `<br>✅ Test Complete`;
+    };
 
     function startSpeedTest() {
-      const resultEl = document.getElementById("result");
       resultEl.innerHTML = `Testing speed <span class="spinner"></span>`;
-
-      test = new Speedtest();
-
-      test.onupdate = function(data) {
-        resultEl.innerHTML = `
-          ⬇️ Download: ${data.dlStatus} Mbps<br>
-          ⬆️ Upload: ${data.ulStatus} Mbps<br>
-          📶 Ping: ${data.pingStatus} ms
-        `;
-      };
-
-      test.onend = function(aborted) {
-        if (aborted) {
-          resultEl.innerHTML = "❌ Test Aborted";
-        }
-      };
-
-      test.start();
+      s.start();
     }
   </script>
-
 </body>
 </html>
