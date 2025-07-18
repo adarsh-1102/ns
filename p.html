@@ -2,41 +2,68 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Live Camera Color Picker</title>
   <style>
     body {
-      font-family: Poppins, sans-serif;
-      text-align: center;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
       background: #111;
       color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    video, canvas {
+
+    h1 {
+      font-size: 1.6rem;
+      text-align: center;
+      margin: 20px 10px 10px;
+    }
+
+    video {
+      width: 95vw;
+      max-width: 400px;
       border-radius: 12px;
-      max-width: 90%;
-      margin: 20px;
+      margin-top: 10px;
     }
+
     .color-info {
       margin-top: 20px;
-      font-size: 1.2rem;
+      text-align: center;
+      font-size: 1.1rem;
+      padding: 10px;
     }
+
     .color-box {
-      width: 100px;
-      height: 100px;
-      margin: 10px auto;
-      border: 2px solid #fff;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 10px;
+      border: 2px solid white;
       border-radius: 10px;
+    }
+
+    canvas {
+      display: none;
+    }
+
+    p {
+      margin: 4px 0;
+      word-break: break-word;
     }
   </style>
 </head>
 <body>
-  <h1>🎨 Live Camera Color Picker</h1>
-  <video id="video" autoplay></video>
-  <canvas id="canvas" style="display:none;"></canvas>
+  <h1>🎨 Camera Color Picker</h1>
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas"></canvas>
+
   <div class="color-info">
     <div class="color-box" id="colorBox"></div>
     <p id="rgbValue">RGB: </p>
     <p id="hexValue">HEX: </p>
-    <p>📸 Click on the video to pick color</p>
+    <p style="font-size: 0.9rem;">📸 Tap anywhere on the video to get color</p>
   </div>
 
   <script>
@@ -47,22 +74,22 @@
     const rgbValue = document.getElementById('rgbValue');
     const hexValue = document.getElementById('hexValue');
 
-    // Start webcam
-    navigator.mediaDevices.getUserMedia({ video: true })
+    // Access camera
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
       .then(stream => {
         video.srcObject = stream;
       }).catch(err => {
-        alert("Camera access denied or unavailable.");
+        alert("Camera access denied or not available.");
       });
 
-    video.addEventListener('click', function(e) {
+    // Color picker on touch/click
+    video.addEventListener('click', function (e) {
       const rect = video.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       const scaleX = canvas.width / rect.width;
@@ -70,10 +97,9 @@
 
       const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1).data;
       const [r, g, b] = pixel;
-
       const hex = "#" + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('');
 
-      colorBox.style.background = hex;
+      colorBox.style.backgroundColor = hex;
       rgbValue.textContent = `RGB: (${r}, ${g}, ${b})`;
       hexValue.textContent = `HEX: ${hex}`;
     });
