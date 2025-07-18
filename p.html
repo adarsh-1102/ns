@@ -61,10 +61,16 @@
       grid-template-columns: repeat(4, 1fr);
       grid-template-rows: repeat(6, 1fr);
       z-index: 2;
+      pointer-events: none;
     }
 
     .grid-cell {
-      /* no border or background */
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      pointer-events: auto;
+    }
+
+    .grid-cell:active {
+      background-color: transparent !important;
     }
 
     .color-info {
@@ -108,7 +114,7 @@
 
     @media (max-width: 768px) {
       #camera-wrapper {
-        height: 300px;
+        height: 60vh;
       }
 
       .color-box {
@@ -136,7 +142,7 @@
     <div class="color-box" id="colorBox"></div>
     <p class="values" id="rgbValue">RGB: —</p>
     <p class="values" id="hexValue">HEX: —</p>
-    <button class="copy-btn" onclick="copyHex()">Copy HEX</button>
+    <button id="copyBtn" class="copy-btn" onclick="copyHex()">Copy HEX</button>
   </div>
 
   <script>
@@ -147,19 +153,16 @@
     const colorBox = document.getElementById('colorBox');
     const rgbValue = document.getElementById('rgbValue');
     const hexValue = document.getElementById('hexValue');
-
     let lastHex = '';
 
-    // Start camera
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
       .then(stream => {
         video.srcObject = stream;
       })
-      .catch(err => {
+      .catch(() => {
         alert("Camera access denied or unavailable.");
       });
 
-    // Create tappable grid
     for (let i = 0; i < 24; i++) {
       const cell = document.createElement('div');
       cell.classList.add('grid-cell');
@@ -190,18 +193,19 @@
 
     function copyHex() {
       if (!lastHex) return;
-      navigator.clipboard.writeText(lastHex);
 
-      const button = document.querySelector('.copy-btn');
-      const originalText = button.textContent;
+      navigator.clipboard.writeText(lastHex).then(() => {
+        const button = document.getElementById('copyBtn');
+        const originalText = button.textContent;
 
-      button.textContent = "Copied!";
-      button.disabled = true;
+        button.textContent = "Copied!";
+        button.disabled = true;
 
-      setTimeout(() => {
-        button.textContent = originalText;
-        button.disabled = false;
-      }, 1500);
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.disabled = false;
+        }, 1500);
+      });
     }
   </script>
 </body>
