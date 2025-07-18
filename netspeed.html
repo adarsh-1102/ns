@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Internet Speed Test</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #00c9a7;
+      border: none;
+      padding: 12px 30px;
+      font-size: 18px;
+      border-radius: 30px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #00b093;
+    }
+
+    .result {
+      margin-top: 25px;
+      font-size: 22px;
+      min-height: 40px;
+    }
+
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top: 4px solid #00c9a7;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>📶 Internet Speed Test</h1>
+    <button onclick="startSpeedTest()">Test Speed</button>
+    <div class="result" id="result">Waiting to test...</div>
+  </div>
+
+  <!-- Load LibreSpeed script -->
+  <script src="https://cdn.jsdelivr.net/npm/librespeed/speedtest.min.js"></script>
+
+  <script>
+    let test;
+
+    function startSpeedTest() {
+      const resultEl = document.getElementById("result");
+      resultEl.innerHTML = `Testing speed <span class="spinner"></span>`;
+
+      test = new Speedtest();
+
+      test.onupdate = function(data) {
+        resultEl.innerHTML = `
+          ⬇️ Download: ${data.dlStatus} Mbps<br>
+          ⬆️ Upload: ${data.ulStatus} Mbps<br>
+          📶 Ping: ${data.pingStatus} ms
+        `;
+      };
+
+      test.onend = function(aborted) {
+        if (aborted) {
+          resultEl.innerHTML = "❌ Test Aborted";
+        }
+      };
+
+      test.start();
+    }
+  </script>
+
+</body>
+</html>
