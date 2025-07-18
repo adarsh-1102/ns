@@ -28,6 +28,24 @@
       padding: 20px;
     }
 
+    .logo-container {
+      text-align: center;
+      padding: 10px 0 20px;
+    }
+
+    .logo {
+      width: 200px;
+      max-width: 80%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+      transition: transform 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.03);
+    }
+
     h1 {
       font-size: 2rem;
       margin-bottom: 15px;
@@ -39,7 +57,7 @@
       position: relative;
       width: 100%;
       max-width: 500px;
-      height: 420px;
+      height: 65vh;
       border-radius: 15px;
       overflow: hidden;
       box-shadow: 0 0 15px rgba(0, 255, 200, 0.3);
@@ -61,16 +79,10 @@
       grid-template-columns: repeat(4, 1fr);
       grid-template-rows: repeat(6, 1fr);
       z-index: 2;
-      pointer-events: none;
     }
 
     .grid-cell {
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      pointer-events: auto;
-    }
-
-    .grid-cell:active {
-      background-color: transparent !important;
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .color-info {
@@ -125,10 +137,19 @@
       .values {
         font-size: 1rem;
       }
+
+      .logo {
+        width: 150px;
+      }
     }
   </style>
 </head>
 <body>
+
+  <div class="logo-container">
+    <img src="https://i.ibb.co/whPzFstJ/ar.jpg" alt="ARX Stores Logo" class="logo" />
+  </div>
+
   <h1>🎨 Live Color Picker</h1>
 
   <div id="camera-wrapper">
@@ -142,7 +163,7 @@
     <div class="color-box" id="colorBox"></div>
     <p class="values" id="rgbValue">RGB: —</p>
     <p class="values" id="hexValue">HEX: —</p>
-    <button id="copyBtn" class="copy-btn" onclick="copyHex()">Copy HEX</button>
+    <button class="copy-btn" id="copyBtn" onclick="copyHex()">Copy HEX</button>
   </div>
 
   <script>
@@ -153,16 +174,20 @@
     const colorBox = document.getElementById('colorBox');
     const rgbValue = document.getElementById('rgbValue');
     const hexValue = document.getElementById('hexValue');
+    const copyBtn = document.getElementById('copyBtn');
+
     let lastHex = '';
 
+    // Start camera
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
       .then(stream => {
         video.srcObject = stream;
       })
-      .catch(() => {
+      .catch(err => {
         alert("Camera access denied or unavailable.");
       });
 
+    // Create tappable grid
     for (let i = 0; i < 24; i++) {
       const cell = document.createElement('div');
       cell.classList.add('grid-cell');
@@ -188,25 +213,18 @@
         rgbValue.textContent = `RGB: (${r}, ${g}, ${b})`;
         hexValue.textContent = `HEX: ${hex}`;
         lastHex = hex;
+
+        copyBtn.textContent = "Copy HEX"; // reset button if clicked again
       });
     }
 
     function copyHex() {
       if (!lastHex) return;
-
-      navigator.clipboard.writeText(lastHex).then(() => {
-        const button = document.getElementById('copyBtn');
-        const originalText = button.textContent;
-
-        button.textContent = "Copied!";
-        button.disabled = true;
-
-        setTimeout(() => {
-          button.textContent = originalText;
-          button.disabled = false;
-        }, 1500);
-      });
+      navigator.clipboard.writeText(lastHex);
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => copyBtn.textContent = "Copy HEX", 2000);
     }
   </script>
+
 </body>
 </html>
