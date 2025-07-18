@@ -17,29 +17,54 @@
     }
 
     h1 {
-      font-size: 1.6rem;
-      text-align: center;
+      font-size: 1.5rem;
       margin: 20px 10px 10px;
+      text-align: center;
+    }
+
+    #camera-wrapper {
+      position: relative;
+      width: 100vw;
+      max-width: 600px;
+      aspect-ratio: 3/4;
     }
 
     video {
-      width: 95vw;
-      max-width: 400px;
-      border-radius: 12px;
-      margin-top: 10px;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(6, 1fr);
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    .grid-cell {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .grid-cell:active {
+      background-color: rgba(255, 255, 255, 0.1);
     }
 
     .color-info {
       margin-top: 20px;
       text-align: center;
-      font-size: 1.1rem;
-      padding: 10px;
     }
 
     .color-box {
       width: 80px;
       height: 80px;
-      margin: 0 auto 10px;
+      margin: 10px auto;
       border: 2px solid white;
       border-radius: 10px;
     }
@@ -50,59 +75,72 @@
 
     p {
       margin: 4px 0;
-      word-break: break-word;
     }
   </style>
 </head>
 <body>
-  <h1>🎨 Camera Color Picker</h1>
-  <video id="video" autoplay playsinline></video>
+  <h1>🎨 Live Camera Color Picker</h1>
+
+  <div id="camera-wrapper">
+    <video id="video" autoplay playsinline></video>
+    <div class="grid-overlay" id="overlay"></div>
+  </div>
+
   <canvas id="canvas"></canvas>
 
   <div class="color-info">
     <div class="color-box" id="colorBox"></div>
     <p id="rgbValue">RGB: </p>
     <p id="hexValue">HEX: </p>
-    <p style="font-size: 0.9rem;">📸 Tap anywhere on the video to get color</p>
+    <p style="font-size: 0.9rem;">📸 Tap a square to pick color</p>
   </div>
 
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
     const colorBox = document.getElementById('colorBox');
     const rgbValue = document.getElementById('rgbValue');
     const hexValue = document.getElementById('hexValue');
 
-    // Access camera
+    // Start camera
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
       .then(stream => {
         video.srcObject = stream;
-      }).catch(err => {
-        alert("Camera access denied or not available.");
+      })
+      .catch(err => {
+        alert("Camera access denied or unavailable.");
       });
 
-    // Color picker on touch/click
-    video.addEventListener('click', function (e) {
-      const rect = video.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+    // Create grid cells
+    for (let i = 0; i < 24; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('grid-cell');
+      overlay.appendChild(cell);
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      cell.addEventListener('click', function (e) {
+        const rect = video.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
 
-      const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1).data;
-      const [r, g, b] = pixel;
-      const hex = "#" + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      colorBox.style.backgroundColor = hex;
-      rgbValue.textContent = `RGB: (${r}, ${g}, ${b})`;
-      hexValue.textContent = `HEX: ${hex}`;
-    });
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1).data;
+        const [r, g, b] = pixel;
+        const hex = "#" + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('');
+
+        colorBox.style.backgroundColor = hex;
+        rgbValue.textContent = `RGB: (${r}, ${g}, ${b})`;
+        hexValue.textContent = `HEX: ${hex}`;
+      });
+    }
   </script>
 </body>
 </html>
