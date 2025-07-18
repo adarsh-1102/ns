@@ -30,20 +30,15 @@
 
     .logo-container {
       text-align: center;
-      padding: 10px 0 20px;
+      margin-bottom: 15px;
     }
 
     .logo {
-      width: 200px;
+      width: 180px;
       max-width: 80%;
       height: auto;
       object-fit: contain;
       filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
-      transition: transform 0.3s ease;
-    }
-
-    .logo:hover {
-      transform: scale(1.03);
     }
 
     h1 {
@@ -57,7 +52,7 @@
       position: relative;
       width: 100%;
       max-width: 500px;
-      height: 65vh;
+      height: 480px;
       border-radius: 15px;
       overflow: hidden;
       box-shadow: 0 0 15px rgba(0, 255, 200, 0.3);
@@ -83,6 +78,7 @@
 
     .grid-cell {
       border: 1px solid rgba(255, 255, 255, 0.08);
+      background-color: transparent !important;
     }
 
     .color-info {
@@ -126,7 +122,7 @@
 
     @media (max-width: 768px) {
       #camera-wrapper {
-        height: 60vh;
+        height: 65vh;
       }
 
       .color-box {
@@ -137,15 +133,11 @@
       .values {
         font-size: 1rem;
       }
-
-      .logo {
-        width: 150px;
-      }
     }
   </style>
 </head>
 <body>
-
+  <!-- Logo Section -->
   <div class="logo-container">
     <img src="https://i.ibb.co/whPzFstJ/ar.jpg" alt="ARX Stores Logo" class="logo" />
   </div>
@@ -214,7 +206,8 @@
         hexValue.textContent = `HEX: ${hex}`;
         lastHex = hex;
 
-        copyBtn.textContent = "Copy HEX"; // reset button if clicked again
+        // Reset button label
+        copyBtn.textContent = "Copy HEX";
       });
     }
 
@@ -222,9 +215,10 @@
       if (!lastHex) return;
       navigator.clipboard.writeText(lastHex);
       copyBtn.textContent = "Copied!";
-      setTimeout(() => copyBtn.textContent = "Copy HEX", 2000);
+      setTimeout(() => {
+        copyBtn.textContent = "Copy HEX";
+      }, 2000);
     }
   </script>
-
 </body>
 </html>
