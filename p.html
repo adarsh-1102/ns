@@ -39,7 +39,7 @@
       position: relative;
       width: 100%;
       max-width: 500px;
-      height: 480px;
+      height: 420px;
       border-radius: 15px;
       overflow: hidden;
       box-shadow: 0 0 15px rgba(0, 255, 200, 0.3);
@@ -64,11 +64,7 @@
     }
 
     .grid-cell {
-      border: none;
-      outline: none;
-      background: transparent;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
+      /* no border or background */
     }
 
     .color-info {
@@ -110,31 +106,9 @@
       display: none;
     }
 
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: var(--accent);
-      color: #000;
-      padding: 12px 24px;
-      border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      font-size: 1rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      z-index: 9999;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
     @media (max-width: 768px) {
       #camera-wrapper {
-        height: 60vh;
+        height: 300px;
       }
 
       .color-box {
@@ -165,8 +139,6 @@
     <button class="copy-btn" onclick="copyHex()">Copy HEX</button>
   </div>
 
-  <div id="toast" class="toast">HEX code copied!</div>
-
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
@@ -175,7 +147,6 @@
     const colorBox = document.getElementById('colorBox');
     const rgbValue = document.getElementById('rgbValue');
     const hexValue = document.getElementById('hexValue');
-    const toast = document.getElementById('toast');
 
     let lastHex = '';
 
@@ -185,7 +156,7 @@
         video.srcObject = stream;
       })
       .catch(err => {
-        showToast("Camera access denied or unavailable.");
+        alert("Camera access denied or unavailable.");
       });
 
     // Create tappable grid
@@ -220,15 +191,17 @@
     function copyHex() {
       if (!lastHex) return;
       navigator.clipboard.writeText(lastHex);
-      showToast("HEX code copied: " + lastHex);
-    }
 
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add('show');
+      const button = document.querySelector('.copy-btn');
+      const originalText = button.textContent;
+
+      button.textContent = "Copied!";
+      button.disabled = true;
+
       setTimeout(() => {
-        toast.classList.remove('show');
-      }, 2500);
+        button.textContent = originalText;
+        button.disabled = false;
+      }, 1500);
     }
   </script>
 </body>
