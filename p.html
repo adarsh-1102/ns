@@ -5,28 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Live Camera Color Picker</title>
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
+    html, body {
       margin: 0;
       padding: 0;
       background: #111;
       color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      font-family: 'Poppins', sans-serif;
     }
 
     h1 {
-      font-size: 1.5rem;
-      margin: 20px 10px 10px;
       text-align: center;
+      margin: 20px 10px 10px;
+      font-size: 1.5rem;
     }
 
     #camera-wrapper {
       position: relative;
-      width: 100vw;
+      width: 100%;
       max-width: 600px;
-      aspect-ratio: 3/4;
+      height: 480px; /* default height for desktop */
+      margin: auto;
     }
 
     video {
@@ -40,11 +38,11 @@
       position: absolute;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       grid-template-rows: repeat(6, 1fr);
-      width: 100%;
-      height: 100%;
       z-index: 2;
     }
 
@@ -57,14 +55,14 @@
     }
 
     .color-info {
-      margin-top: 20px;
       text-align: center;
+      margin-top: 20px;
     }
 
     .color-box {
       width: 80px;
       height: 80px;
-      margin: 10px auto;
+      margin: 0 auto 10px;
       border: 2px solid white;
       border-radius: 10px;
     }
@@ -75,6 +73,26 @@
 
     p {
       margin: 4px 0;
+    }
+
+    /* ✅ Mobile-specific styles */
+    @media (max-width: 768px) {
+      #camera-wrapper {
+        height: 75vh; /* taller on mobile */
+      }
+
+      h1 {
+        font-size: 1.3rem;
+      }
+
+      .color-box {
+        width: 70px;
+        height: 70px;
+      }
+
+      .color-info {
+        font-size: 0.95rem;
+      }
     }
   </style>
 </head>
@@ -113,7 +131,7 @@
         alert("Camera access denied or unavailable.");
       });
 
-    // Create grid cells
+    // Create tappable grid
     for (let i = 0; i < 24; i++) {
       const cell = document.createElement('div');
       cell.classList.add('grid-cell');
