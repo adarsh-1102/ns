@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARX Tools – Live Color Picker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <title>Live Color Picker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #111;
@@ -28,27 +28,10 @@
       padding: 20px;
     }
 
-    .logo {
-      font-size: 2.2rem;
-      font-weight: 800;
-      margin-bottom: 8px;
-      letter-spacing: 1px;
-      text-align: center;
-    }
-
-    .logo .brand {
-      color: var(--accent);
-    }
-
-    .logo .sub {
-      color: white;
-    }
-
     h1 {
-      font-size: 1.4rem;
-      margin-bottom: 20px;
-      font-weight: 500;
-      color: var(--text);
+      font-size: 2rem;
+      margin-bottom: 15px;
+      color: var(--accent);
       text-align: center;
     }
 
@@ -132,10 +115,6 @@
         height: 75vh;
       }
 
-      .logo {
-        font-size: 1.8rem;
-      }
-
       .color-box {
         width: 70px;
         height: 70px;
@@ -148,10 +127,7 @@
   </style>
 </head>
 <body>
-  <!-- ARX Tools Logo -->
-  <div class="logo"><span class="brand">ARX</span><span class="sub"> Tools</span></div>
-
-  <h1>Live Color Picker from Camera</h1>
+  <h1>🎨 Live Color Picker</h1>
 
   <div id="camera-wrapper">
     <video id="video" autoplay playsinline></video>
@@ -178,6 +154,7 @@
 
     let lastHex = '';
 
+    // Start camera
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
       .then(stream => {
         video.srcObject = stream;
@@ -186,6 +163,7 @@
         alert("Camera access denied or unavailable.");
       });
 
+    // Create tappable grid
     for (let i = 0; i < 24; i++) {
       const cell = document.createElement('div');
       cell.classList.add('grid-cell');
