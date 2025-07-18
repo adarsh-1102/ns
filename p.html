@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Live Camera Color Picker</title>
+  <style>
+    body {
+      font-family: Poppins, sans-serif;
+      text-align: center;
+      background: #111;
+      color: white;
+    }
+    video, canvas {
+      border-radius: 12px;
+      max-width: 90%;
+      margin: 20px;
+    }
+    .color-info {
+      margin-top: 20px;
+      font-size: 1.2rem;
+    }
+    .color-box {
+      width: 100px;
+      height: 100px;
+      margin: 10px auto;
+      border: 2px solid #fff;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Live Camera Color Picker</h1>
+  <video id="video" autoplay></video>
+  <canvas id="canvas" style="display:none;"></canvas>
+  <div class="color-info">
+    <div class="color-box" id="colorBox"></div>
+    <p id="rgbValue">RGB: </p>
+    <p id="hexValue">HEX: </p>
+    <p>📸 Click on the video to pick color</p>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const colorBox = document.getElementById('colorBox');
+    const rgbValue = document.getElementById('rgbValue');
+    const hexValue = document.getElementById('hexValue');
+
+    // Start webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      }).catch(err => {
+        alert("Camera access denied or unavailable.");
+      });
+
+    video.addEventListener('click', function(e) {
+      const rect = video.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1).data;
+      const [r, g, b] = pixel;
+
+      const hex = "#" + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('');
+
+      colorBox.style.background = hex;
+      rgbValue.textContent = `RGB: (${r}, ${g}, ${b})`;
+      hexValue.textContent = `HEX: ${hex}`;
+    });
+  </script>
+</body>
+</html>
