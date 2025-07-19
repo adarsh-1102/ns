@@ -115,7 +115,8 @@
       margin: 8px 0;
     }
 
-    button.copy-btn {
+    button.copy-btn,
+    #flip-btn {
       padding: 8px 20px;
       margin-top: 10px;
       font-size: 0.95rem;
@@ -127,8 +128,13 @@
       transition: background 0.2s ease;
     }
 
-    button.copy-btn:hover {
+    button.copy-btn:hover,
+    #flip-btn:hover {
       background: #00ddb3;
+    }
+
+    #flip-btn {
+      margin-top: 15px;
     }
 
     canvas {
@@ -171,6 +177,8 @@
     <div class="grid-overlay" id="overlay"></div>
   </div>
 
+  <button id="flip-btn">Flip Camera</button>
+
   <canvas id="canvas"></canvas>
 
   <div class="color-info">
@@ -188,16 +196,35 @@
     const colorBox = document.getElementById('colorBox');
     const rgbValue = document.getElementById('rgbValue');
     const hexValue = document.getElementById('hexValue');
+    const flipBtn = document.getElementById('flip-btn');
 
     let lastHex = '';
+    let currentFacingMode = "environment";
+    let currentStream = null;
 
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
-      .then(stream => {
+    async function startCamera(facingMode = "environment") {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { exact: facingMode } },
+          audio: false
+        });
+        currentStream = stream;
         video.srcObject = stream;
-      })
-      .catch(err => {
+      } catch (err) {
         alert("Camera access denied or unavailable.");
-      });
+      }
+    }
+
+    startCamera(currentFacingMode);
+
+    flipBtn.addEventListener('click', () => {
+      currentFacingMode = currentFacingMode === "environment" ? "user" : "environment";
+      startCamera(currentFacingMode);
+    });
 
     for (let i = 0; i < 24; i++) {
       const cell = document.createElement('div');
