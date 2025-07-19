@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Color Picker | ARX Tools</title>
+  <title>ARX Color Picker</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f8f9fa;
-      --text: #212529;
-      --border: #dee2e6;
-      --accent: #0d6efd;
+      --bg: #1e1e2f;
+      --card: #2b2b3d;
+      --text: #f0f0f0;
+      --muted: #b0b0b0;
+      --border: #3c3c52;
+      --accent: #00c8a8;
     }
 
     * {
@@ -20,9 +22,9 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
       background-color: var(--bg);
       color: var(--text);
+      font-family: 'Inter', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -32,37 +34,47 @@
     .header {
       display: flex;
       align-items: center;
+      gap: 12px;
       margin-bottom: 30px;
-      gap: 10px;
     }
 
     .header img {
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
     }
 
     .header-title {
       font-size: 1.25rem;
       font-weight: 600;
+      color: var(--accent);
     }
 
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       font-weight: 600;
-      margin-bottom: 20px;
-      color: #343a40;
+      color: var(--text);
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      max-width: 520px;
+      width: 100%;
     }
 
     #camera-wrapper {
       position: relative;
       width: 100%;
-      max-width: 480px;
       height: 400px;
-      border-radius: 12px;
+      border-radius: 10px;
       overflow: hidden;
-      border: 1px solid var(--border);
-      background: #e9ecef;
+      background: #12121c;
+      margin-bottom: 20px;
     }
 
     video {
@@ -85,48 +97,45 @@
     }
 
     .grid-cell {
-      border: 1px solid rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.04);
       pointer-events: auto;
     }
 
-    .color-info {
-      margin-top: 30px;
+    .info-section {
       text-align: center;
+      margin-top: 10px;
     }
 
     .color-box {
       width: 80px;
       height: 80px;
-      margin: 0 auto 10px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      margin: 0 auto 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     }
 
     .values {
-      font-size: 0.95rem;
-      color: #495057;
-      margin-bottom: 5px;
+      font-size: 1rem;
+      margin: 4px 0;
+      color: var(--muted);
     }
 
     button {
-      padding: 8px 16px;
+      padding: 10px 20px;
       font-size: 0.9rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: white;
-      color: var(--text);
+      font-weight: 500;
+      background-color: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
-      margin-top: 10px;
-      transition: background 0.2s;
+      transition: background 0.2s ease;
+      margin-top: 12px;
     }
 
     button:hover {
-      background: #f1f3f5;
-    }
-
-    #flip-btn {
-      margin-top: 20px;
+      background-color: #00b49a;
     }
 
     canvas {
@@ -144,11 +153,11 @@
       }
 
       h1 {
-        font-size: 1.25rem;
+        font-size: 1.4rem;
       }
 
       .values {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
       }
     }
   </style>
@@ -156,26 +165,28 @@
 <body>
 
   <div class="header">
-    <img src="https://i.ibb.co/whPzFstJ/ar.jpg" alt="ARX Logo" />
+    <img src="https://i.ibb.co/whPzFstJ/ar.jpg" alt="ARX Logo">
     <div class="header-title">ARX Tools</div>
   </div>
 
   <h1>Live Color Picker</h1>
 
-  <div id="camera-wrapper">
-    <video id="video" autoplay playsinline></video>
-    <div class="grid-overlay" id="overlay"></div>
-  </div>
+  <div class="card">
+    <div id="camera-wrapper">
+      <video id="video" autoplay playsinline></video>
+      <div class="grid-overlay" id="overlay"></div>
+    </div>
 
-  <button id="flip-btn">Flip Camera</button>
+    <button id="flip-btn">Flip Camera</button>
 
-  <canvas id="canvas"></canvas>
+    <canvas id="canvas"></canvas>
 
-  <div class="color-info">
-    <div class="color-box" id="colorBox"></div>
-    <p class="values" id="rgbValue">RGB: —</p>
-    <p class="values" id="hexValue">HEX: —</p>
-    <button onclick="copyHex(this)">Copy HEX</button>
+    <div class="info-section">
+      <div class="color-box" id="colorBox"></div>
+      <p class="values" id="rgbValue">RGB: —</p>
+      <p class="values" id="hexValue">HEX: —</p>
+      <button onclick="copyHex(this)">Copy HEX</button>
+    </div>
   </div>
 
   <script>
@@ -199,7 +210,7 @@
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { exact: facingMode } },
+          video: { facingMode: { ideal: facingMode } },
           audio: false
         });
         currentStream = stream;
