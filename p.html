@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Color Picker</title>
+  <title>Color Picker | ARX Tools</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #111;
-      --text: #f0f0f0;
-      --accent: #00ffc8;
+      --bg: #f8f9fa;
+      --text: #212529;
+      --border: #dee2e6;
+      --accent: #0d6efd;
     }
 
     * {
@@ -19,57 +20,49 @@
     }
 
     body {
+      font-family: 'Inter', sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      font-family: 'Inter', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
+      padding: 40px 20px;
     }
 
-    .corner-brand {
-      position: fixed;
-      top: 12px;
-      left: 12px;
+    .header {
       display: flex;
       align-items: center;
-      background-color: rgba(14, 14, 14, 0.8);
-      padding: 6px 12px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-      z-index: 999;
+      margin-bottom: 30px;
+      gap: 10px;
     }
 
-    .corner-logo {
+    .header img {
       width: 36px;
       height: 36px;
-      border-radius: 8px;
-      object-fit: cover;
-      margin-right: 10px;
+      border-radius: 6px;
     }
 
-    .corner-title {
-      font-size: 1rem;
+    .header-title {
+      font-size: 1.25rem;
       font-weight: 600;
-      color: var(--accent);
     }
 
     h1 {
-      font-size: 2rem;
-      margin: 60px 0 15px;
-      color: var(--accent);
-      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #343a40;
     }
 
     #camera-wrapper {
       position: relative;
       width: 100%;
-      max-width: 500px;
-      height: 480px;
-      border-radius: 15px;
+      max-width: 480px;
+      height: 400px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 0 15px rgba(0, 255, 200, 0.3);
+      border: 1px solid var(--border);
+      background: #e9ecef;
     }
 
     video {
@@ -92,49 +85,48 @@
     }
 
     .grid-cell {
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       pointer-events: auto;
     }
 
     .color-info {
-      margin-top: 25px;
+      margin-top: 30px;
       text-align: center;
     }
 
     .color-box {
-      width: 90px;
-      height: 90px;
+      width: 80px;
+      height: 80px;
       margin: 0 auto 10px;
-      border: 2px solid white;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .values {
-      font-size: 1.1rem;
-      margin: 8px 0;
-    }
-
-    button.copy-btn,
-    #flip-btn {
-      padding: 8px 20px;
-      margin-top: 10px;
       font-size: 0.95rem;
-      border: none;
-      border-radius: 8px;
-      background: var(--accent);
-      color: #000;
-      cursor: pointer;
-      transition: background 0.2s ease;
+      color: #495057;
+      margin-bottom: 5px;
     }
 
-    button.copy-btn:hover,
-    #flip-btn:hover {
-      background: #00ddb3;
+    button {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: white;
+      color: var(--text);
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #f1f3f5;
     }
 
     #flip-btn {
-      margin-top: 15px;
+      margin-top: 20px;
     }
 
     canvas {
@@ -143,34 +135,32 @@
 
     @media (max-width: 768px) {
       #camera-wrapper {
-        height: 75vh;
+        height: 65vh;
       }
 
       .color-box {
-        width: 70px;
-        height: 70px;
-      }
-
-      .values {
-        font-size: 1rem;
+        width: 65px;
+        height: 65px;
       }
 
       h1 {
-        margin-top: 80px;
-        font-size: 1.5rem;
+        font-size: 1.25rem;
+      }
+
+      .values {
+        font-size: 0.85rem;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Logo + Title -->
-  <div class="corner-brand">
-    <img src="https://i.ibb.co/whPzFstJ/ar.jpg" alt="ARX Logo" class="corner-logo" />
-    <span class="corner-title">ARX Tools</span>
+  <div class="header">
+    <img src="https://i.ibb.co/whPzFstJ/ar.jpg" alt="ARX Logo" />
+    <div class="header-title">ARX Tools</div>
   </div>
 
-  <h1>🎨 Live Color Picker</h1>
+  <h1>Live Color Picker</h1>
 
   <div id="camera-wrapper">
     <video id="video" autoplay playsinline></video>
@@ -185,7 +175,7 @@
     <div class="color-box" id="colorBox"></div>
     <p class="values" id="rgbValue">RGB: —</p>
     <p class="values" id="hexValue">HEX: —</p>
-    <button class="copy-btn" onclick="copyHex(this)">Copy HEX</button>
+    <button onclick="copyHex(this)">Copy HEX</button>
   </div>
 
   <script>
