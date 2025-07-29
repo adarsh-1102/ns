@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Trojan Implement</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background-color: black;
+      color: #00ff00;
+      font-family: monospace;
+      overflow: hidden;
+      user-select: none;
+      cursor: none;
+    }
+
+    #screen {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      padding: 30px;
+      box-sizing: border-box;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .code {
+      flex-grow: 1;
+      font-size: 20px;
+      line-height: 1.4;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .warning {
+      font-size: 32px;
+      color: red;
+      text-align: center;
+      margin-top: 20px;
+      animation: blink 1s infinite alternate;
+    }
+
+    @keyframes blink {
+      from { opacity: 1; }
+      to { opacity: 0.2; }
+    }
+
+    #streamArea {
+      display: none;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow-y: scroll;
+      font-size: 18px;
+      color: #00ff00;
+      background-color: black;
+      font-family: monospace;
+      white-space: pre;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    #streamContent > div {
+      line-height: 1.4;
+      white-space: pre;
+    }
+
+    .success {
+      font-size: 28px;
+      color: #00ff00;
+      text-align: center;
+      margin-top: 30vh;
+      line-height: 1.8;
+      white-space: pre-line;
+      animation: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="screen">
+    <div class="code" id="codeArea">Initializing system...</div>
+    <div class="warning" id="warningText">Collecting IP Address...</div>
+  </div>
+
+  <div id="streamArea">
+    <div id="streamContent"></div>
+  </div>
+
+  <script>
+    const codeLines = [
+      "[+] Establishing connection to host...",
+      "[+] IP Address: 192.168.0.104",
+      "[+] Server Location: srv-hk-92c7a8f3.node.internal.net:443",
+      "[+] Tracing physical location...",
+      "[+] Found: New Delhi, IN",
+      "[+] Injecting tracking module...",
+      "[+] Downloading payload...",
+      "[+] implant.exe uploaded",
+      "[+] Trojan module installing...",
+      "[+] Registry modified",
+      "[+] Access granted - SYSTEM/root",
+      "[+] Listening on port 443...",
+      "[+] Data exfiltration in progress...",
+      "[!] /etc/sys/config/system32/config.json",
+      "[!] /home/admin/docs/payload/implant.py",
+      "[!] /usr/bin/execute/implant.exe",
+      "[!] /var/tmp/shadow.bak copied...",
+      "[!] /opt/security/scan_module/rootscan.sh"
+    ];
+
+    const screen = document.getElementById('screen');
+    const codeArea = document.getElementById('codeArea');
+    const warningText = document.getElementById('warningText');
+    const streamArea = document.getElementById('streamArea');
+    const streamContent = document.getElementById('streamContent');
+
+    function showNextLine(index = 0) {
+      if (index < codeLines.length) {
+        codeArea.innerText += "\n" + codeLines[index];
+        codeArea.scrollTop = codeArea.scrollHeight;
+
+        if (codeLines[index].toLowerCase().includes("trojan")) {
+          warningText.innerText = "Implementing Trojan...";
+        }
+
+        const delay = Math.floor(Math.random() * 500) + 400; // 400ms–900ms
+        setTimeout(() => showNextLine(index + 1), delay);
+      } else {
+        warningText.innerText = "System Compromised";
+        warningText.style.color = "#ff0000";
+        warningText.style.animation = "none"; // stop blinking
+
+        setTimeout(() => {
+          screen.style.opacity = 0;
+          setTimeout(() => {
+            screen.style.display = "none";
+            startCodeStream();
+          }, 1000);
+        }, 2000);
+      }
+    }
+
+    function getRandomLine(length = 100) {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(){}[]<>/\\|";
+      let line = "";
+      for (let i = 0; i < length; i++) {
+        line += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return line;
+    }
+
+    function startCodeStream() {
+      streamArea.style.display = "block";
+
+      function addLine() {
+        const lineElement = document.createElement("div");
+        lineElement.textContent = getRandomLine(Math.floor(window.innerWidth / 10));
+        streamContent.appendChild(lineElement);
+        streamArea.scrollTop = streamArea.scrollHeight;
+      }
+
+      const intervalId = setInterval(addLine, 30);
+
+      setTimeout(() => {
+        clearInterval(intervalId);
+        streamContent.innerHTML = "";
+
+        const successMessage = document.createElement("div");
+        successMessage.classList.add("success");
+        successMessage.innerText = `SYSTEM LOGIN OVERRIDDEN\nFILE SYSTEM MANIPULATED\nTRACE BLOCKED - SAFE TO PROCEED\n\nThanks for sharing IP`;
+        streamContent.appendChild(successMessage);
+      }, 3000);
+    }
+
+    async function tryFullscreen() {
+      try {
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch (e) {
+        console.warn("Fullscreen not allowed without user interaction.");
+      }
+    }
+
+    window.onload = () => {
+      tryFullscreen();
+      setTimeout(() => showNextLine(), 1000);
+    };
+  </script>
+</body>
+</html>
