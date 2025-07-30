@@ -2,267 +2,194 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARX Color Picker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <title>AI Trojan Implement</title>
   <style>
-    :root {
-      --bg: #1e1e2f;
-      --card: #2b2b3d;
-      --text: #f0f0f0;
-      --muted: #b0b0b0;
-      --border: #3c3c52;
-      --accent: #00c8a8;
-    }
-
-    * {
+    html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
+      width: 100%;
+      background-color: black;
+      color: #00ff00;
+      font-family: monospace;
+      overflow: hidden;
+      user-select: none;
+      cursor: none;
+    }
+
+    #screen {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      padding: 30px;
+      box-sizing: border-box;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .code {
+      flex-grow: 1;
+      font-size: 20px;
+      line-height: 1.4;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .warning {
+      font-size: 32px;
+      color: red;
+      text-align: center;
+      margin-top: 20px;
+      animation: blink 1s infinite alternate;
+    }
+
+    @keyframes blink {
+      from { opacity: 1; }
+      to { opacity: 0.2; }
+    }
+
+    #streamArea {
+      display: none;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow-y: scroll;
+      font-size: 18px;
+      color: #00ff00;
+      background-color: black;
+      font-family: monospace;
+      white-space: pre;
+      padding: 10px;
       box-sizing: border-box;
     }
 
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px;
+    #streamContent > div {
+      line-height: 1.4;
+      white-space: pre;
     }
 
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 30px;
-    }
-
-    .header img {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-    }
-
-    .header-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--accent);
-    }
-
-    h1 {
-      font-size: 1.8rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 25px;
-    }
-
-    .card {
-      background-color: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-      max-width: 520px;
-      width: 100%;
-    }
-
-    #camera-wrapper {
-      position: relative;
-      width: 100%;
-      height: 400px;
-      border-radius: 10px;
-      overflow: hidden;
-      background: #12121c;
-      margin-bottom: 20px;
-    }
-
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .grid-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(6, 1fr);
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .grid-cell {
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      pointer-events: auto;
-    }
-
-    .info-section {
+    .success {
+      font-size: 28px;
+      color: #00ff00;
       text-align: center;
-      margin-top: 10px;
-    }
-
-    .color-box {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 12px;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-    }
-
-    .values {
-      font-size: 1rem;
-      margin: 4px 0;
-      color: var(--muted);
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      background-color: var(--accent);
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s ease;
-      margin-top: 12px;
-    }
-
-    button:hover {
-      background-color: #00b49a;
-    }
-
-    canvas {
-      display: none;
-    }
-
-    @media (max-width: 768px) {
-      #camera-wrapper {
-        height: 65vh;
-      }
-
-      .color-box {
-        width: 65px;
-        height: 65px;
-      }
-
-      h1 {
-        font-size: 1.4rem;
-      }
-
-      .values {
-        font-size: 0.9rem;
-      }
+      margin-top: 30vh;
+      line-height: 1.8;
+      white-space: pre-line;
+      animation: none;
     }
   </style>
 </head>
 <body>
-
-  <div class="header">
-    <img src="https://i.ibb.co/whPzFstJ/ar.jpg" alt="ARX Logo">
-    <div class="header-title">ARX Tools</div>
+  <div id="screen">
+    <div class="code" id="codeArea">Initializing system...</div>
+    <div class="warning" id="warningText">Collecting IP Address...</div>
   </div>
 
-  <h1>Live Color Picker</h1>
-
-  <div class="card">
-    <div id="camera-wrapper">
-      <video id="video" autoplay playsinline></video>
-      <div class="grid-overlay" id="overlay"></div>
-    </div>
-
-    <button id="flip-btn">Flip Camera</button>
-
-    <canvas id="canvas"></canvas>
-
-    <div class="info-section">
-      <div class="color-box" id="colorBox"></div>
-      <p class="values" id="rgbValue">RGB: —</p>
-      <p class="values" id="hexValue">HEX: —</p>
-      <button onclick="copyHex(this)">Copy HEX</button>
-    </div>
+  <div id="streamArea">
+    <div id="streamContent"></div>
   </div>
 
   <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const overlay = document.getElementById('overlay');
-    const colorBox = document.getElementById('colorBox');
-    const rgbValue = document.getElementById('rgbValue');
-    const hexValue = document.getElementById('hexValue');
-    const flipBtn = document.getElementById('flip-btn');
+    const codeLines = [
+      "[+] Establishing connection to host...",
+      "[+] IP Address: 192.168.0.104",
+      "[+] Server Location: srv-hk-92c7a8f3.node.internal.net:443",
+      "[+] Tracing physical location...",
+      "[+] Found: New Delhi, IN",
+      "[+] Injecting tracking module...",
+      "[+] Downloading payload...",
+      "[+] implant.exe uploaded",
+      "[+] Trojan module installing...",
+      "[+] Registry modified",
+      "[+] Access granted - SYSTEM/root",
+      "[+] Listening on port 443...",
+      "[+] Data exfiltration in progress...",
+      "[!] /etc/sys/config/system32/config.json",
+      "[!] /home/admin/docs/payload/implant.py",
+      "[!] /usr/bin/execute/implant.exe",
+      "[!] /var/tmp/shadow.bak copied...",
+      "[!] /opt/security/scan_module/rootscan.sh"
+    ];
 
-    let lastHex = '';
-    let currentFacingMode = "environment";
-    let currentStream = null;
+    const screen = document.getElementById('screen');
+    const codeArea = document.getElementById('codeArea');
+    const warningText = document.getElementById('warningText');
+    const streamArea = document.getElementById('streamArea');
+    const streamContent = document.getElementById('streamContent');
 
-    async function startCamera(facingMode = "environment") {
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
-      }
+    function showNextLine(index = 0) {
+      if (index < codeLines.length) {
+        codeArea.innerText += "\n" + codeLines[index];
+        codeArea.scrollTop = codeArea.scrollHeight;
 
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: facingMode } },
-          audio: false
-        });
-        currentStream = stream;
-        video.srcObject = stream;
-      } catch (err) {
-        alert("Camera access denied or unavailable.");
+        if (codeLines[index].toLowerCase().includes("trojan")) {
+          warningText.innerText = "Implementing Trojan...";
+        }
+
+        const delay = Math.floor(Math.random() * 500) + 400; // 400ms–900ms
+        setTimeout(() => showNextLine(index + 1), delay);
+      } else {
+        warningText.innerText = "System Compromised";
+        warningText.style.color = "#ff0000";
+        warningText.style.animation = "none"; // stop blinking
+
+        setTimeout(() => {
+          screen.style.opacity = 0;
+          setTimeout(() => {
+            screen.style.display = "none";
+            startCodeStream();
+          }, 500); // fade out quicker
+        }, 500); // move on faster
       }
     }
 
-    startCamera(currentFacingMode);
-
-    flipBtn.addEventListener('click', () => {
-      currentFacingMode = currentFacingMode === "environment" ? "user" : "environment";
-      startCamera(currentFacingMode);
-    });
-
-    for (let i = 0; i < 24; i++) {
-      const cell = document.createElement('div');
-      cell.classList.add('grid-cell');
-      overlay.appendChild(cell);
-
-      cell.addEventListener('click', function (e) {
-        const rect = video.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-
-        const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1).data;
-        const [r, g, b] = pixel;
-        const hex = "#" + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('');
-
-        colorBox.style.backgroundColor = hex;
-        rgbValue.textContent = `RGB: (${r}, ${g}, ${b})`;
-        hexValue.textContent = `HEX: ${hex}`;
-        lastHex = hex;
-      });
+    function getRandomLine(length = 100) {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(){}[]<>/\\|";
+      let line = "";
+      for (let i = 0; i < length; i++) {
+        line += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return line;
     }
 
-    function copyHex(button) {
-      if (!lastHex) return;
-      navigator.clipboard.writeText(lastHex);
-      button.textContent = "Copied!";
+    function startCodeStream() {
+      streamArea.style.display = "block";
+
+      function addLine() {
+        const lineElement = document.createElement("div");
+        lineElement.textContent = getRandomLine(Math.floor(window.innerWidth / 10));
+        streamContent.appendChild(lineElement);
+        streamArea.scrollTop = streamArea.scrollHeight;
+      }
+
+      const intervalId = setInterval(addLine, 30);
+
       setTimeout(() => {
-        button.textContent = "Copy HEX";
-      }, 1500);
+        clearInterval(intervalId);
+        streamContent.innerHTML = "";
+
+        const successMessage = document.createElement("div");
+        successMessage.classList.add("success");
+        successMessage.innerText = `SYSTEM LOGIN OVERRIDDEN\nFILE SYSTEM MANIPULATED\nTRACE BLOCKED - SAFE TO PROCEED\n\nThanks for sharing IP`;
+        streamContent.appendChild(successMessage);
+      }, 3000);
     }
+
+    async function tryFullscreen() {
+      try {
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch (e) {
+        console.warn("Fullscreen not allowed without user interaction.");
+      }
+    }
+
+    window.onload = () => {
+      tryFullscreen();
+      setTimeout(() => showNextLine(), 1000);
+    };
   </script>
 </body>
 </html>
